@@ -1,0 +1,32 @@
+.div1 {
+  float: left;
+  width: 100px;
+  height: 0;
+  border-top: none;
+  border-bottom: 40px blue solid;
+  border-left: none;
+  border-right: transparent 23px solid;
+}
+
+.square {
+  float: left;
+  width: 100px;
+  height: 40px;
+  background: blue;
+  transform: skewX(30deg);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.square:nth-child(2) {
+  background: red;
+  margin-left: -11px;
+}
+
+.square:nth-child(3) {
+  background: green;
+}
+
+.square:nth-child(4) {
+  background: yellow;
+}
