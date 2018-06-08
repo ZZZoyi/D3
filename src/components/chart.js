@@ -17,10 +17,6 @@ const G = styled.g`
   transform: translate(50px, 50px)
 `
 
-const Line = styled.line`
-  stroke: red;
-`
-
 const Path = styled.path`
   fill: url("#linearGrandient");
   opacity: 0.5;
@@ -45,34 +41,72 @@ export default class chart extends Component {
     super(props)
     this.state = {
       testData: 'this is chart',
+      width: 0,
+      height: 0
     }
     this.refSvg = React.createRef()
     this.refX = React.createRef()
     this.refY = React.createRef()
+    this.initAxes()
     this.line = d3.line().x(d => this.x(d.date)).y(d => this.y(d.value))
     this.area = d3.area().x(d => this.x(d.date)).y0(398).y1(d => this.y(d.value))
-    this.initAxes()
-    this.x.domain(d3.extent(props.pathData.map(d => d.date)))
-    this.y.domain([0, d3.max(props.pathData.map(d => d.value)) + 100])
+    this.onResize = this.onResize.bind(this)
   }
 
   componentDidMount () {
     let svg = this.refSvg.current
+    this.setState({width: svg.clientWidth})
+
     d3.select(svg).on('mousemove', (e) => this.onMouseMove(e))
     d3.select(svg).on('mouseleave', (e) => this.onMouseLeave(e))
+
+    // this.x.range([0, svg.clientWidth - 100])
+    // this.y.range([svg.clientHeight - 100, 0])
+
+    this.onResize()
+    window.addEventListener('resize', this.onResize, false)
+  }
+
+  onResize () {
+    let svg = this.refSvg.current
+    this.setState({width: svg.clientWidth, height: svg.clientHeight})
+    // this.updateAxis()
+    // this.forceUpdate()
+  }
+
+  updateAxis () {
     this.customAxisX(d3.select(this.refX.current))
     this.customAxisY(d3.select(this.refY.current))
   }
 
+  componentWillUnmount () {
+    window.removeEventListener('resize', this.onResize, false)
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    let { width, height } = this.state
+    if (width !== prevState.width || height !== prevState.height) {
+      this.updateAxis()
+    }
+
+    if (prevProps.pathData !== this.props.pathData) {
+
+      this.x.domain(d3.extent(this.props.pathData.map(d => d.date)))
+      this.y.domain([0, d3.max(this.props.pathData.map(d => d.value)) + 100])
+      this.updateAxis()
+      this.forceUpdate()
+    }
+  }
+
   initAxes () {
-    this.x = d3.scaleTime().range([0, 825])
-    this.y = d3.scaleLinear().range([398, 0])
+    this.x = d3.scaleTime().range([0, 0])
+    this.y = d3.scaleLinear().range([0, 0])
   }
 
   customAxisX (g) {
     // const width = parseInt(d3.select(this.myRef.current.parentNode).style('width'), 10)
-    const xScale = this.x.domain(d3.extent(this.props.pathData.map(d => d.date)))
-    const timeAxis = d3.axisBottom(xScale).ticks(12, '%H:%M').tickSize(0).tickPadding(10)
+    // const xScale = this.x.domain(d3.extent(this.props.pathData.map(d => d.date)))
+    const timeAxis = d3.axisBottom(this.x).ticks(12, '%H:%M').tickSize(0).tickPadding(10)
     g.attr('class', 'axis')
       .attr('transform', 'translate(0, 398)')
       .call(timeAxis)
@@ -80,8 +114,8 @@ export default class chart extends Component {
 
   customAxisY (g) {
     // const height = parseInt(d3.select(this.myRef.current.parentNode).style('height'), 10)
-    const yScale = this.y.domain([0, d3.max(this.props.pathData.map(d => d.value)) + 100])
-    const axisY = d3.axisLeft(yScale).tickSize(0).ticks(5)
+    // const yScale = this.y.domain([0, d3.max(this.props.pathData.map(d => d.value)) + 100])
+    const axisY = d3.axisLeft(this.y).tickSize(0).ticks(5)
     g.call(axisY)
   }
 
@@ -231,6 +265,11 @@ export default class chart extends Component {
   }
 
   render () {
+    console.log('---------------刷新页面---------------')
+    let { width, height } = this.state
+    this.x.range([0, width - 100]).domain(d3.extent(this.props.pathData.map(d => d.date)))
+    this.y.range([height - 100, 0]).domain([0, d3.max(this.props.pathData.map(d => d.value)) + 100])
+
     return (
       <Div class="svgBoxs">
         <Svg innerRef={this.refSvg} onClick={(e) => this.handleClick(e)}>
@@ -238,8 +277,8 @@ export default class chart extends Component {
             <g ref={this.refX}></g>
             <g ref={this.refY}></g>
             {
-              this.props.data.map((el, i) => (
-                <Line x1={el.x1} y1={el.y1} x2={el.x2} y2={el.y2} key={i}></Line>
+              this.props.titles.map((el, i) => (
+                <text x={el.x1} y={el.y1} key={i}>{el.title}</text>
               ))
             }
             <linearGradient id="linearGrandient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -256,7 +295,7 @@ export default class chart extends Component {
 }
 
 chart.defaultProps = {
-  data: [{x1: 0, y1: 0, x2:100, y2: 50}, {x1: 0, y1: 20, x2:100, y2: 100}],
+  titles: [{x1: 0, y1: 0, title: 'time-chart'}, {x1: 0, y1: 20, title: 'change-chart'}],
   pathData: [
     {date: new Date(1528041600000), value: 35},
     {date: new Date(1528051600000), value: 80},

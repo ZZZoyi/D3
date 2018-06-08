@@ -19,5 +19,12 @@
   },
   "devDependencies": {
     "d3": "^5.4.0"
+  },
+  "proxy": {
+    "/pmv-web": {
+      "target": "http://111.204.156.11:8063",
+      "secure": false,
+      "changeOrigin": true
+    }
   }
 }
