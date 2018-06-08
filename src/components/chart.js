@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import * as d3 from 'd3'
 
 const Div = styled.div`
-  height: 500px;
+  height: 100%;
 `
 
 const Svg = styled.svg`
@@ -49,7 +49,6 @@ export default class chart extends Component {
     this.refY = React.createRef()
     this.initAxes()
     this.line = d3.line().x(d => this.x(d.date)).y(d => this.y(d.value))
-    this.area = d3.area().x(d => this.x(d.date)).y0(398).y1(d => this.y(d.value))
     this.onResize = this.onResize.bind(this)
   }
 
@@ -60,9 +59,6 @@ export default class chart extends Component {
     d3.select(svg).on('mousemove', (e) => this.onMouseMove(e))
     d3.select(svg).on('mouseleave', (e) => this.onMouseLeave(e))
 
-    // this.x.range([0, svg.clientWidth - 100])
-    // this.y.range([svg.clientHeight - 100, 0])
-
     this.onResize()
     window.addEventListener('resize', this.onResize, false)
   }
@@ -70,8 +66,6 @@ export default class chart extends Component {
   onResize () {
     let svg = this.refSvg.current
     this.setState({width: svg.clientWidth, height: svg.clientHeight})
-    // this.updateAxis()
-    // this.forceUpdate()
   }
 
   updateAxis () {
@@ -90,7 +84,6 @@ export default class chart extends Component {
     }
 
     if (prevProps.pathData !== this.props.pathData) {
-
       this.x.domain(d3.extent(this.props.pathData.map(d => d.date)))
       this.y.domain([0, d3.max(this.props.pathData.map(d => d.value)) + 100])
       this.updateAxis()
@@ -104,8 +97,6 @@ export default class chart extends Component {
   }
 
   customAxisX (g) {
-    // const width = parseInt(d3.select(this.myRef.current.parentNode).style('width'), 10)
-    // const xScale = this.x.domain(d3.extent(this.props.pathData.map(d => d.date)))
     const timeAxis = d3.axisBottom(this.x).ticks(12, '%H:%M').tickSize(0).tickPadding(10)
     g.attr('class', 'axis')
       .attr('transform', 'translate(0, 398)')
@@ -113,8 +104,6 @@ export default class chart extends Component {
   }
 
   customAxisY (g) {
-    // const height = parseInt(d3.select(this.myRef.current.parentNode).style('height'), 10)
-    // const yScale = this.y.domain([0, d3.max(this.props.pathData.map(d => d.value)) + 100])
     const axisY = d3.axisLeft(this.y).tickSize(0).ticks(5)
     g.call(axisY)
   }
@@ -265,11 +254,10 @@ export default class chart extends Component {
   }
 
   render () {
-    console.log('---------------刷新页面---------------')
     let { width, height } = this.state
     this.x.range([0, width - 100]).domain(d3.extent(this.props.pathData.map(d => d.date)))
     this.y.range([height - 100, 0]).domain([0, d3.max(this.props.pathData.map(d => d.value)) + 100])
-
+    this.area = d3.area().x(d => this.x(d.date)).y0(height - 100).y1(d => this.y(d.value))
     return (
       <Div class="svgBoxs">
         <Svg innerRef={this.refSvg} onClick={(e) => this.handleClick(e)}>
