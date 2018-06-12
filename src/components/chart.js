@@ -98,15 +98,20 @@ export default class chart extends Component {
   }
 
   customAxisX (g) {
-    const timeAxis = d3.axisBottom(this.x).ticks(12, '%H:%M').tickSize(0).tickPadding(10)
+    const timeAxis = d3.axisBottom(this.x).ticks(12, '%H:%M').tickSize(0).tickPadding(10).tickSizeOuter(5)
     g.attr('class', 'axis')
       .attr('transform', 'translate(0, 398)')
       .call(timeAxis)
+    // g.selectAll('.tick:first-of-type').remove()
   }
 
   customAxisY (g) {
-    const axisY = d3.axisLeft(this.y).tickSize(0).ticks(5)
+    const axisY = d3.axisRight(this.y).ticks(5).tickSize(this.state.width - 100).tickPadding(10)
+    .tickFormat(d => (d3.format(',.0f')(d)))
     g.call(axisY)
+    g.select('.domain').remove()
+    g.selectAll('.tick:not(:first-of-type) line').attr('stroke', '#777').attr('stroke-dasharray', '2,2')
+	  g.selectAll('.tick text').attr('x', -20).attr('dy', 0)
   }
 
   handleClick (e) {
@@ -284,12 +289,12 @@ export default class chart extends Component {
 }
 
 chart.defaultProps = {
-  titles: [{x1: 0, y1: 0, title: 'time-chart'}, {x1: 0, y1: 20, title: 'change-chart'}],
+  titles: [{x1: 0, y1: 0, title: 'time-chart'}],
   pathData: [
     {date: new Date(1528041600000), value: 35},
     {date: new Date(1528051600000), value: 80},
     {date: new Date(1528061600000), value: 200},
-    {date: new Date(1528071600000), value: 150},
+    {date: new Date(1528071600000), value: 1500},
     {date: new Date(1528081600000), value: 400},
     {date: new Date(1528091600000), value: 50},
     {date: new Date(1528095600000), value: 60},
