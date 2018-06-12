@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
+// import Axis from './axis.js'
 import * as d3 from 'd3'
 
 const Div = styled.div`
@@ -48,7 +49,7 @@ export default class chart extends Component {
     this.refX = React.createRef()
     this.refY = React.createRef()
     this.initAxes()
-    this.line = d3.line().x(d => this.x(d.date)).y(d => this.y(d.value))
+    this.line = d3.line().x(d => this.x(d.date)).y(d => this.y(d.value)).curve(d3.curveCardinal.tension(0.3))
     this.onResize = this.onResize.bind(this)
   }
 
@@ -257,7 +258,7 @@ export default class chart extends Component {
     let { width, height } = this.state
     this.x.range([0, width - 100]).domain(d3.extent(this.props.pathData.map(d => d.date)))
     this.y.range([height - 100, 0]).domain([0, d3.max(this.props.pathData.map(d => d.value)) + 100])
-    this.area = d3.area().x(d => this.x(d.date)).y0(height - 100).y1(d => this.y(d.value))
+    this.area = d3.area().x(d => this.x(d.date)).y0(height - 100).y1(d => this.y(d.value)).curve(d3.curveCardinal.tension(0.3))
     return (
       <Div class="svgBoxs">
         <Svg innerRef={this.refSvg} onClick={(e) => this.handleClick(e)}>
@@ -291,6 +292,8 @@ chart.defaultProps = {
     {date: new Date(1528071600000), value: 150},
     {date: new Date(1528081600000), value: 400},
     {date: new Date(1528091600000), value: 50},
+    {date: new Date(1528095600000), value: 60},
+    {date: new Date(1528099600000), value: 50},
     {date: new Date(1528101600000), value: 450},
     {date: new Date(1528111600000), value: 5}
   ]

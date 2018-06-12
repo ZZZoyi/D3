@@ -26,25 +26,25 @@ class App extends Component {
   }
 
   getProjects() {
-    // this.setState({
-    //   projects: [
-    //     {
-    //       id: uuid.v4(),
-    //       title: 'Business Website',
-    //       category: 'Web Deisgn'
-    //     },
-    //     {
-    //       id: uuid.v4(),
-    //       title: 'Social Website',
-    //       category: 'Mobile Development'
-    //     },
-    //     {
-    //       id: uuid.v4(),
-    //       title: 'Ecommerce Shopping Cart',
-    //       category: 'Web Development'
-    //     }
-    //   ]
-    // })
+    this.setState({
+      projects: [
+        {
+          id: uuid.v4(),
+          title: 'Business Website',
+          category: 'Web Deisgn'
+        },
+        {
+          id: uuid.v4(),
+          title: 'Social Website',
+          category: 'Mobile Development'
+        },
+        {
+          id: uuid.v4(),
+          title: 'Ecommerce Shopping Cart',
+          category: 'Web Development'
+        }
+      ]
+    })
   }
 
   getPathData () {
@@ -70,10 +70,10 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    // let result = await this.getTodos()
-    // this.setState({todos: result.slice(0, 10)}, function() {
-    //   console.log('this is new data')
-    // })
+    let result = await this.getTodos()
+    this.setState({todos: result.slice(0, 10)}, function() {
+      console.log('this is new data')
+    })
   }
 
   handleAddProject(project) {
