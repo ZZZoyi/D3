@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import uuid from 'uuid'
 // import $ from 'jquery'
+import { NavLink, BrowserRouter, Route } from 'react-router-dom'
 import * as services from './services/services.js'
 import Chart from './components/chart.js'
 import TitleSquare from './components/title-square.jsx'
@@ -16,6 +17,7 @@ class App extends Component {
       projects: [],
       todos: [],
       // pathData: []
+      state: true
     }
   }
 
@@ -90,6 +92,28 @@ class App extends Component {
     this.setState({projects: projects})
   }
 
+  clickFn () {
+    // this.setState.state = !this.state.state
+    // console.log(this.state.state)
+  }
+
+  Home () {
+    return <h1>home</h1>
+  }
+
+  Contact () {
+    return <h1>contact</h1>
+  }
+
+  app () {
+    return (
+      <div>
+        <NavLink to="/" exact activeClassName="active">Home</NavLink>
+        <NavLink to="/contact" activeClassName="active">Contact</NavLink>
+      </div>
+    )
+  }
+
   render() {
     return (
       <div className="App">
@@ -102,7 +126,15 @@ class App extends Component {
             <hr />
             <Todos todos={this.state.todos}/>
           </div>
-          <div className="block">
+          <div className="block"  onClick={this.clickFn.bind(this)}>
+            <p>this is test react router</p>
+            <BrowserRouter>
+              <div>
+                <Route component={this.app} />
+                <Route path="/" exact component={this.Home} />
+                <Route path="/contact" component={this.Contact} />
+              </div>
+            </BrowserRouter>
             <Projects projects={this.state.projects} onDelete={this.handleDeleteProject.bind(this)} />
           </div>
           <div className="block">
